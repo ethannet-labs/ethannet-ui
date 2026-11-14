@@ -229,3 +229,8 @@ The original plan put the Spring Boot app in `apps/photos-api` inside this pnpm 
 - `tests/home.spec.ts` didn't pass unchanged: it hardcoded "Hello from the Express API!". It now expects "Hello from the photos API!", the message the Spring Boot builder returns (step C3).
 - Root `package.json` was renamed to `ethannet-ui`, and `concurrently` was removed. The ui's `metadata.description` no longer mentions Express.
 - With the Node apps gone, `pnpm lint` passes with no errors.
+
+### Follow-ups in ethannet-ui (2026-11-14)
+
+- **Localhost only:** the user works on public Wi-Fi, so `next dev`/`next start` run with `-H 127.0.0.1` and Storybook with `--host 127.0.0.1`. Checked with `ss -ltn`, and e2e still passes (12/12) against a photos-api bound to loopback.
+- **License policy:** EPL-2.0 is allowed for unmodified dependencies, and dual-licensed packages are allowed under an allowed option, matching the photos-api repo.
