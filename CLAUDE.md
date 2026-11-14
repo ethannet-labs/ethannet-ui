@@ -69,6 +69,10 @@ The whole repo shares one [semver](https://semver.org) version (`MAJOR.MINOR.PAT
 - **Pre-1.0**: the repo stays on `0.y.z` until the user decides it's ready for `1.0.0`. Until then, breaking changes bump the minor version.
 - **Releasing**: only when the user asks. On a release branch off `dev`, `pnpm version-packages` combines the pending changesets into the version bump and each package's `CHANGELOG.md`. That branch merges into `dev`, then `dev` is merged into `main`, and the merge commit is tagged `vX.Y.Z`.
 
+### License
+
+This repo's own code is licensed under **Apache-2.0** (`LICENSE`, with the copyright line in `NOTICE`, and `"license": "Apache-2.0"` in every `package.json`; a new workspace package must declare it too). New files need no per-file header. Don't add code copied from elsewhere unless its license allows relicensing under Apache-2.0, or keep it with its own notice. Any distributed build must include `LICENSE`, `NOTICE` and the license notices of the third-party dependencies it bundles.
+
 ### External dependencies
 
 Every third-party package must be free, permissively licensed open source. Check a package's license (the `license` field in its `package.json` or its repository) before adding it.

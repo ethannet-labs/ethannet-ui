@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "description": "The photos-api contract as consumed by the ui: a vendored copy of the OpenAPI spec, pinned to a photos-api release, plus TypeScript types generated from it. Consumed directly from source (no build step).",
+  "license": "Apache-2.0",
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
