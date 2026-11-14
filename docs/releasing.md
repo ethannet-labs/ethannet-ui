@@ -18,7 +18,7 @@ Nothing is committed directly to `main` or `dev`.
 
 Every workspace package in this repo (`@ethannet/ui`, `e2e`, `schema`, `messages`, `navigation`) shares one [semver](https://semver.org) version, `MAJOR.MINOR.PATCH`. [Changesets](https://github.com/changesets/changesets) manages the numbers. `.changeset/config.json` puts every `@ethannet/*` package in one `fixed` group, so a bump to any package bumps them all to the same version. The root `package.json` isn't a workspace package and has no version.
 
-The media-api lives in its own repo, [ethannet-media](https://github.com/Ethan-S-Evans/ethannet-media), with its own version and releases. This repo's version doesn't follow it. Adopting a new media-api release (see [API contract](features/api-contract.md)) is an ordinary change here, with its own changeset.
+The media-api lives in its own repo, [ethannet-media](https://github.com/ethannet-labs/ethannet-media), with its own version and releases. This repo's version doesn't follow it. Adopting a new media-api release (see [API contract](features/api-contract.md)) is an ordinary change here, with its own changeset.
 
 | Bump | When |
 | --- | --- |

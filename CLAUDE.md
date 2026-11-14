@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 pnpm-workspace TypeScript monorepo for the ethannet UI: Next.js App Router UI (`apps/ui`, port 3000), Playwright suite (`apps/e2e`), the media-api contract types (`packages/schema`), the ui copy (`packages/messages`), and the site link config (`packages/navigation`). `apps/` holds things that run; `packages/` holds things apps import.
 
-The backend is the Spring Boot **media-api** (port 4001) in a separate repo, [ethannet-media](https://github.com/Ethan-S-Evans/ethannet-media), checked out locally at `../ethannet-media`. It owns the OpenAPI contract; this repo vendors a pinned copy. See [docs/architecture.md](docs/architecture.md) for the rationale behind the setup, [docs/features/api-contract.md](docs/features/api-contract.md) for the contract workflow, and [docs/releasing.md](docs/releasing.md) for the branch and release workflow; implementation plans live in [docs/plans/](docs/plans/).
+The backend is the Spring Boot **media-api** (port 4001) in a separate repo, [ethannet-media](https://github.com/ethannet-labs/ethannet-media), checked out locally at `../ethannet-media`. It owns the OpenAPI contract; this repo vendors a pinned copy. See [docs/architecture.md](docs/architecture.md) for the rationale behind the setup, [docs/features/api-contract.md](docs/features/api-contract.md) for the contract workflow, and [docs/releasing.md](docs/releasing.md) for the branch and release workflow; implementation plans live in [docs/plans/](docs/plans/).
 
 ## Commands
 

@@ -24,7 +24,7 @@
     "vitest": "^2.1.8"
   },
   "mediaApi": {
-    "repo": "Ethan-S-Evans/ethannet-media",
+    "repo": "ethannet-labs/ethannet-media",
     "path": "openapi/photos-api.yaml",
     "ref": "v0.1.0"
   }

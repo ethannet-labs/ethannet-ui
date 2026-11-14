@@ -1,6 +1,6 @@
 # ethannet-ui
 
-The Next.js UI for ethannet, as a pnpm-workspace TypeScript monorepo. The backend, a Spring Boot media-api, lives in its own repo: [ethannet-media](https://github.com/Ethan-S-Evans/ethannet-media).
+The Next.js UI for ethannet, as a pnpm-workspace TypeScript monorepo. The backend, a Spring Boot media-api, lives in its own repo: [ethannet-media](https://github.com/ethannet-labs/ethannet-media).
 
 ## Layout
 
@@ -15,7 +15,7 @@ See [docs/architecture.md](docs/architecture.md) for how the pieces fit together
 
 ## Getting started
 
-Start the media-api first, from a checkout of [ethannet-media](https://github.com/Ethan-S-Evans/ethannet-media) next to this one (it needs JDK 25 and Podman):
+Start the media-api first, from a checkout of [ethannet-media](https://github.com/ethannet-labs/ethannet-media) next to this one (it needs JDK 25 and Podman):
 
 ```
 cd ../ethannet-media
