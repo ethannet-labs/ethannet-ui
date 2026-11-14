@@ -26,6 +26,6 @@
   "photosApi": {
     "repo": "Ethan-S-Evans/ethannet-media",
     "path": "openapi/photos-api.yaml",
-    "ref": null
+    "ref": "v0.1.0"
   }
 }

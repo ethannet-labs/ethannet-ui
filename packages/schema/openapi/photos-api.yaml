@@ -5,7 +5,7 @@ info:
     Contract between the Next.js ui and the Spring Boot photos-api. This file is
     the source of truth: the ui's TypeScript types and the api's Java interfaces
     are both generated from it.
-  version: 0.0.1
+  version: 0.1.0
 servers:
   - url: http://localhost:4001
     description: Local development
