@@ -2,6 +2,10 @@
 
 Every page in the ui shares one header and one footer. The root layout (`apps/ui/src/app/layout.tsx`) renders them around the page content. This page covers what they do, how to change them, and how to test them. For how the ui fits into the rest of the repo, see [Architecture](../architecture.md). The plan this was built from is [2026-10-14-header-and-footer](../plans/2026-10-14-header-and-footer.md).
 
+## Theme
+
+The header, footer and mobile menu use only the shared color tokens, so they follow the visitor's OS light or dark setting. See [Theming](theming.md).
+
 ## Components
 
 All in `apps/ui/src/components/layout/`, each in its own folder (e.g. `layout/Header/`) with its `.module.css`, `.test.tsx`, `.stories.tsx` and an `index.ts` that re-exports it, so it is imported as `@/components/layout/Header`. Shared story fixtures are in `layout/fixtures.ts`.
@@ -86,7 +90,7 @@ jsdom can't apply media queries, so the responsive behavior is tested in Playwri
 pnpm --filter @ethannet/e2e exec playwright test tests/layout.spec.ts
 ```
 
-Storybook (`pnpm storybook`) has every component under **Layout**, each with a Docs page. `MobileMenu/Open` opens the menu with a play function. `Header/Mobile` and `Header/Desktop` show both layouts. Use the viewport toolbar to try other widths.
+Storybook (`pnpm storybook`) has every component under **Layout**, each with a Docs page. `MobileMenu/Open` opens the menu with a play function. `Header/Mobile` and `Header/Desktop` show both layouts. Use the viewport toolbar to try other widths. Use the Theme toolbar to switch between light and dark; `Header/MobileDark`, `Header/DesktopDark` and `Footer/Dark` show the dark theme.
 
 ### Manual check
 
@@ -96,3 +100,4 @@ With `pnpm dev` running, open http://localhost:3000:
 2. Close it with each of: the X, the backdrop, Escape, and a link.
 3. Widen the window past 768px. The hamburger disappears and the links appear inline.
 4. Check that the footer sits at the bottom of the page and its links work.
+5. Switch your OS to dark mode. The header, footer and menu panel turn dark without a reload.
