@@ -16,12 +16,14 @@ Nothing is committed directly to `main` or `dev`.
 
 ## Versions
 
-Every workspace package (`@ethannet/api`, `ui`, `media-server`, `core`, `e2e`, `types`) shares one [semver](https://semver.org) version, `MAJOR.MINOR.PATCH`. [Changesets](https://github.com/changesets/changesets) manages the numbers. `.changeset/config.json` puts every `@ethannet/*` package in one `fixed` group, so a bump to any package bumps them all to the same version. The root `package.json` isn't a workspace package and has no version.
+Every workspace package in this repo (`@ethannet/ui`, `e2e`, `schema`, `messages`, `navigation`) shares one [semver](https://semver.org) version, `MAJOR.MINOR.PATCH`. [Changesets](https://github.com/changesets/changesets) manages the numbers. `.changeset/config.json` puts every `@ethannet/*` package in one `fixed` group, so a bump to any package bumps them all to the same version. The root `package.json` isn't a workspace package and has no version.
+
+The photos-api lives in its own repo, [ethannet](https://github.com/Ethan-S-Evans/ethannet), with its own version and releases. This repo's version doesn't follow it. Adopting a new photos-api release (see [API contract](features/api-contract.md)) is an ordinary change here, with its own changeset.
 
 | Bump | When |
 | --- | --- |
-| **major** | A breaking change to an API contract in `packages/types` or to an endpoint, or a large user-facing overhaul. |
-| **minor** | A new feature or endpoint that doesn't break anything. |
+| **major** | A breaking change to a shared package's exports (`packages/schema`, `messages` or `navigation`), or a large user-facing overhaul. |
+| **minor** | A new feature or page that doesn't break anything. |
 | **patch** | A bug fix or a small internal change. |
 | **none** | Docs, tests or tooling only. Use an empty changeset. |
 
@@ -42,7 +44,7 @@ Until the first `1.0.0` release, the repo stays on `0.y.z` and breaking changes 
 
    ```
    pnpm changeset                                        # interactive
-   pnpm changeset --minor @ethannet/api -m "Add /api/x"  # non-interactive
+   pnpm changeset --minor @ethannet/ui -m "Add /about"   # non-interactive
    pnpm changeset --empty                                # no version bump
    ```
 

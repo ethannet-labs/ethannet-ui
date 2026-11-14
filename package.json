@@ -1,13 +1,13 @@
 {
-  "name": "ethannet",
+  "name": "ethannet-ui",
   "private": true,
   "engines": {
     "node": ">=20"
   },
   "scripts": {
-    "dev": "concurrently -n api,ui -c blue,magenta \"pnpm --filter @ethannet/api dev\" \"pnpm --filter @ethannet/ui dev\"",
+    "dev": "pnpm --filter @ethannet/ui dev",
     "build": "pnpm -r --if-present run build",
-    "start": "concurrently -n api,ui -c blue,magenta \"pnpm --filter @ethannet/api start\" \"pnpm --filter @ethannet/ui start\"",
+    "start": "pnpm --filter @ethannet/ui start",
     "typecheck": "pnpm -r --if-present run typecheck",
     "test": "pnpm -r --if-present run test",
     "test:e2e": "pnpm --filter @ethannet/e2e test:e2e",
@@ -22,7 +22,6 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@changesets/cli": "^3.0.3",
-    "concurrently": "^9.1.0",
     "typescript": "^5.7.2"
   }
 }

@@ -6,7 +6,7 @@ All ui copy, meaning visible text and accessible names such as `aria-label`, com
 
 | File | What it holds |
 | --- | --- |
-| `packages/types/src/index.ts` | `UiMessages`, the contract every message source must satisfy. |
+| `packages/messages/src/types.ts` | `UiMessages`, the contract every message source must satisfy. Exported from `@ethannet/messages`. |
 | `packages/messages/messages/en.json` | The English copy. **Edit copy here.** |
 | `packages/messages/src/index.ts` | Exports `messages: UiMessages` from `en.json`. The type annotation makes `tsc` fail if the JSON is missing a key or has the wrong shape. |
 
@@ -22,7 +22,7 @@ The JSON has one namespace per component (`Logo`, `Header`, `MobileMenu`, `Foote
 }
 ```
 
-`@ethannet/messages` is a source-only workspace package, like `@ethannet/types`, so it's listed in `transpilePackages` in `apps/ui/next.config.ts`. See [Architecture](../architecture.md).
+`@ethannet/messages` is a source-only workspace package, like `@ethannet/schema`, so it's listed in `transpilePackages` in `apps/ui/next.config.ts`. See [Architecture](../architecture.md).
 
 ## How components get their copy
 

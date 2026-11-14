@@ -1,7 +1,7 @@
 # Plan: Split into a UI repo and a Spring Boot photos-api repo
 
 - **Date:** 2026-11-12 (revised 2026-11-14: two repos instead of one)
-- **Status:** In progress (steps A1–A2 done and committed on `feature/spring-boot-photos-api`)
+- **Status:** In progress. Part A is done. In `ethannet-ui`, Part B is done on `feature/remove-node-backends`. Part C happens in `ethannet`.
 - **Repos:**
   - **`ethannet`** (this repo, `github.com/Ethan-S-Evans/ethannet`): becomes the Spring Boot **photos-api**. Its history is kept.
   - **`ethannet-ui`** (new): the Next.js UI monorepo, created from a clone of this repo so its history is kept too.
@@ -220,3 +220,12 @@ The original plan put the Spring Boot app in `apps/photos-api` inside this pnpm 
 - Biome ignores `packages/schema/src/generated/**` entirely (format and lint), not just formatting.
 - `@ethannet/navigation` now lists `@ethannet/messages` under `dependencies` rather than `devDependencies`, because its exported `NavLinkId` and `SocialLinkId` types are derived from `UiMessages`.
 - `packages/types` was deleted before the Node apps were removed. To keep typecheck green in between, `apps/api` imports `HelloResponse` from `@ethannet/schema`, and `apps/media-server` keeps its media types locally in `src/types.ts`. Both apps are deleted in `ethannet-ui` step B2, and this repo drops them in C1.
+
+### Part B (ethannet-ui) differences
+
+- `photosApi.ref` in `packages/schema/package.json` is `null` until photos-api has its first tag. `specUrl` throws a clear error in that case, so `check:api:upstream` and an argument-less `sync:api` explain what to do.
+- The `sync:api` helpers (`specUrl`, `withRef`) live in `packages/schema/scripts/photos-api-source.mjs` and are unit-tested with Vitest, so `@ethannet/schema` now has a `test` script. The scripts use Node's built-in `fetch` on the raw GitHub URL (the repo is public), not `gh`.
+- Playwright's ui `webServer` now waits on `port: 3000` instead of `url: http://localhost:3000`. Playwright starts web servers before `globalSetup`, and with the api down `/` returns a 500, so a URL check hung for 60 seconds instead of reaching the health check's clear error.
+- `tests/home.spec.ts` didn't pass unchanged: it hardcoded "Hello from the Express API!". It now expects "Hello from the photos API!", the message the Spring Boot builder returns (step C3).
+- Root `package.json` was renamed to `ethannet-ui`, and `concurrently` was removed. The ui's `metadata.description` no longer mentions Express.
+- With the Node apps gone, `pnpm lint` passes with no errors.
