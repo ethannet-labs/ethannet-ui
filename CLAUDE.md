@@ -6,13 +6,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 pnpm-workspace TypeScript monorepo for the ethannet UI: Next.js App Router UI (`apps/ui`, port 3000), Playwright suite (`apps/e2e`), the photos-api contract types (`packages/schema`), the ui copy (`packages/messages`), and the site link config (`packages/navigation`). `apps/` holds things that run; `packages/` holds things apps import.
 
-The backend is the Spring Boot **photos-api** (port 4001) in a separate repo, [ethannet](https://github.com/Ethan-S-Evans/ethannet), checked out locally at `../ethannet`. It owns the OpenAPI contract; this repo vendors a pinned copy. See [docs/architecture.md](docs/architecture.md) for the rationale behind the setup, [docs/features/api-contract.md](docs/features/api-contract.md) for the contract workflow, and [docs/releasing.md](docs/releasing.md) for the branch and release workflow; implementation plans live in [docs/plans/](docs/plans/).
+The backend is the Spring Boot **photos-api** (port 4001) in a separate repo, [ethannet-media](https://github.com/Ethan-S-Evans/ethannet-media), checked out locally at `../ethannet-media`. It owns the OpenAPI contract; this repo vendors a pinned copy. See [docs/architecture.md](docs/architecture.md) for the rationale behind the setup, [docs/features/api-contract.md](docs/features/api-contract.md) for the contract workflow, and [docs/releasing.md](docs/releasing.md) for the branch and release workflow; implementation plans live in [docs/plans/](docs/plans/).
 
 ## Commands
 
 Run from the repo root (Node >=20, `engine-strict` is on):
 
-- `pnpm dev` — the ui in watch mode, on `127.0.0.1:3000` only. Start the photos-api separately (from `../ethannet`: `podman compose up -d postgres`, then `./mvnw spring-boot:run`)
+- `pnpm dev` — the ui in watch mode, on `127.0.0.1:3000` only. Start the photos-api separately (from `../ethannet-media`: `podman compose up -d postgres`, then `./mvnw spring-boot:run`)
 - `pnpm build` / `pnpm start` — production build of every package / run of the ui
 - `pnpm typecheck` — `tsc --noEmit` in every package
 - `pnpm test` — Vitest unit tests in every package

@@ -1,7 +1,7 @@
 # Plan: Split into a UI repo and a Spring Boot photos-api repo
 
 - **Date:** 2026-11-12 (revised 2026-11-14: two repos instead of one)
-- **Status:** In progress. Part A is done. In `ethannet-ui`, Part B is done on `feature/remove-node-backends`. Part C happens in `ethannet`.
+- **Status:** In progress. Parts A, B and C are done and merged. Waiting on the first release (C6). The backend repo is now `ethannet-media` (see [Rename](#rename-to-ethannet-media-2026-11-14)).
 - **Repos:**
   - **`ethannet`** (this repo, `github.com/Ethan-S-Evans/ethannet`): becomes the Spring Boot **photos-api**. Its history is kept.
   - **`ethannet-ui`** (new): the Next.js UI monorepo, created from a clone of this repo so its history is kept too.
@@ -234,3 +234,7 @@ The original plan put the Spring Boot app in `apps/photos-api` inside this pnpm 
 
 - **Localhost only:** the user works on public Wi-Fi, so `next dev`/`next start` run with `-H 127.0.0.1` and Storybook with `--host 127.0.0.1`. Checked with `ss -ltn`, and e2e still passes (12/12) against a photos-api bound to loopback.
 - **License policy:** EPL-2.0 is allowed for unmodified dependencies, and dual-licensed packages are allowed under an allowed option, matching the photos-api repo.
+
+### Rename to ethannet-media (2026-11-14)
+
+The photos-api repo was renamed from `ethannet` to **`ethannet-media`**, both on GitHub (`Ethan-S-Evans/ethannet-media`; GitHub redirects the old name) and locally. Both repos now live side by side in a shared folder, `~/git/ethannet/` (`ethannet-media/` and `ethannet-ui/`). Wherever this plan says `ethannet` for the backend repo, read `ethannet-media`. Live docs, the ui's `photosApi.repo`, and the `../ethannet-media` paths were updated. The service and artifact are still called `photos-api`.

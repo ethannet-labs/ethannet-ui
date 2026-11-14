@@ -1,6 +1,6 @@
 # API contract (consumer side)
 
-The ui and the photos-api agree on one OpenAPI 3.1 spec. The photos-api repo, [ethannet](https://github.com/Ethan-S-Evans/ethannet), owns it at `openapi/photos-api.yaml` and generates its Java controller interfaces from it. This repo keeps a **vendored copy**, pinned to a photos-api release, and generates TypeScript types from that copy. The plan this was built from is [2026-11-12-spring-boot-photos-api](../plans/2026-11-12-spring-boot-photos-api.md). See [Architecture](../architecture.md) for how the two repos fit together.
+The ui and the photos-api agree on one OpenAPI 3.1 spec. The photos-api repo, [ethannet-media](https://github.com/Ethan-S-Evans/ethannet-media), owns it at `openapi/photos-api.yaml` and generates its Java controller interfaces from it. This repo keeps a **vendored copy**, pinned to a photos-api release, and generates TypeScript types from that copy. The plan this was built from is [2026-11-12-spring-boot-photos-api](../plans/2026-11-12-spring-boot-photos-api.md). See [Architecture](../architecture.md) for how the two repos fit together.
 
 ## Files
 

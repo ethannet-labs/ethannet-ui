@@ -1,6 +1,6 @@
 # ethannet-ui
 
-The Next.js UI for ethannet, as a pnpm-workspace TypeScript monorepo. The backend, a Spring Boot photos-api, lives in its own repo: [ethannet](https://github.com/Ethan-S-Evans/ethannet).
+The Next.js UI for ethannet, as a pnpm-workspace TypeScript monorepo. The backend, a Spring Boot photos-api, lives in its own repo: [ethannet-media](https://github.com/Ethan-S-Evans/ethannet-media).
 
 ## Layout
 
@@ -15,10 +15,10 @@ See [docs/architecture.md](docs/architecture.md) for how the pieces fit together
 
 ## Getting started
 
-Start the photos-api first, from a checkout of [ethannet](https://github.com/Ethan-S-Evans/ethannet) next to this one (it needs JDK 25 and Podman):
+Start the photos-api first, from a checkout of [ethannet-media](https://github.com/Ethan-S-Evans/ethannet-media) next to this one (it needs JDK 25 and Podman):
 
 ```
-cd ../ethannet
+cd ../ethannet-media
 podman compose up -d postgres
 ./mvnw spring-boot:run
 ```
