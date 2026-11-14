@@ -67,14 +67,19 @@ Only when the owner decides to release.
 
    This deletes the changeset files, bumps every package to the new version and adds an entry to each package's `CHANGELOG.md`. Check the diff, then commit it and merge it into `dev`.
 
-2. Merge `dev` into `main` and tag the merge commit with the new version:
+2. Merge `dev` into `main` **through a pull request**, then tag the merge commit. `main` has a GitHub ruleset (no deletion, no force-push, and CodeQL code-scanning and code-quality results required), so a direct push to `main` is refused. A pull request gets its CodeQL results before merging:
 
    ```
+   git push origin dev
+   gh pr create --base main --head dev --title "Release vX.Y.Z" --body "Release vX.Y.Z"
+   # wait for the CodeQL checks, then merge with a merge commit:
+   gh pr merge --merge
    git switch main && git pull
-   git merge --no-ff dev
-   git tag vX.Y.Z
-   git push origin main vX.Y.Z
+   git tag -a vX.Y.Z -m "vX.Y.Z"
+   git push origin vX.Y.Z
    ```
+
+   CodeQL runs on every push to `main` and on every pull request into it.
 
 Changesets' own `publish` and `git-tag` commands aren't used. The packages are private and aren't published to npm, and the single `vX.Y.Z` tag replaces per-package tags.
 
