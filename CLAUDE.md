@@ -55,7 +55,7 @@ All changes are made on a feature branch. Never commit directly to `main` or `de
 - **`main`**: released code only. It changes only when a release is merged in from `dev`.
 - **`dev`**: the integration branch. Feature branches branch off it and merge back into it.
 - **Feature branches**: create them from `dev` with names like `feature/<short-description>`, and merge them back into `dev` when the work is done and its tests pass.
-- **Releases**: when the user decides to cut a release, `dev` is merged into `main`. Only do this when the user asks.
+- **Releases**: when the user decides to cut a release, `dev` is merged into `main`. Only do this when the user asks. `main` has a GitHub ruleset (no deletion, no force-push, CodeQL code-scanning and code-quality results required), so the merge goes through a pull request from `dev` (`gh pr create --base main --head dev`), never a direct push. Feature branches merge into `dev` locally and `dev` is pushed directly.
 
 ### Versioning
 
