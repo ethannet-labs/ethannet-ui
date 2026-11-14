@@ -48,3 +48,7 @@ The ui runs on http://localhost:3000 and calls the photos-api on http://localhos
 | `pnpm check:api` | Check the generated API types match the vendored spec |
 | `pnpm changeset` | Add a changeset describing the current branch's change |
 | `pnpm version-packages` | Release only: apply pending changesets to versions and changelogs |
+
+## License
+
+Licensed under the [Apache License, Version 2.0](LICENSE). See [NOTICE](NOTICE). Third-party dependencies keep their own licenses; see the license policy in [CLAUDE.md](CLAUDE.md#external-dependencies).
