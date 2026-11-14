@@ -7,7 +7,7 @@ ethannet is split across two repos, one language each:
 | Repo | What it is | Port |
 | --- | --- | --- |
 | **ethannet-ui** (this repo) | Next.js UI, its shared packages, Storybook and the Playwright e2e suite. TypeScript, pnpm. | ui 3000, Storybook 6006 |
-| [**ethannet-media**](https://github.com/Ethan-S-Evans/ethannet-media) | The Spring Boot **media-api** and its Postgres database. Java, Maven. It owns the API contract. | media-api 4001, Postgres 5432 |
+| [**ethannet-media**](https://github.com/ethannet-labs/ethannet-media) | The Spring Boot **media-api** and its Postgres database. Java, Maven. It owns the API contract. | media-api 4001, Postgres 5432 |
 
 Each repo has its own toolchain, version and release cycle. Every dev server in both repos (ui, Storybook, media-api, Postgres) listens on `127.0.0.1` only, so nothing is reachable from the network; the ui's `dev`, `start` and `storybook` scripts pass `-H 127.0.0.1` / `--host 127.0.0.1` for this. The UI talks to the media-api only over HTTP, through the OpenAPI contract described in [API contract](features/api-contract.md). The plan behind the split is [2026-11-12-spring-boot-photos-api](plans/2026-11-12-spring-boot-photos-api.md).
 
