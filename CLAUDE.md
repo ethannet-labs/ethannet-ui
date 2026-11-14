@@ -4,27 +4,27 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-pnpm-workspace TypeScript monorepo for the ethannet UI: Next.js App Router UI (`apps/ui`, port 3000), Playwright suite (`apps/e2e`), the photos-api contract types (`packages/schema`), the ui copy (`packages/messages`), and the site link config (`packages/navigation`). `apps/` holds things that run; `packages/` holds things apps import.
+pnpm-workspace TypeScript monorepo for the ethannet UI: Next.js App Router UI (`apps/ui`, port 3000), Playwright suite (`apps/e2e`), the media-api contract types (`packages/schema`), the ui copy (`packages/messages`), and the site link config (`packages/navigation`). `apps/` holds things that run; `packages/` holds things apps import.
 
-The backend is the Spring Boot **photos-api** (port 4001) in a separate repo, [ethannet-media](https://github.com/Ethan-S-Evans/ethannet-media), checked out locally at `../ethannet-media`. It owns the OpenAPI contract; this repo vendors a pinned copy. See [docs/architecture.md](docs/architecture.md) for the rationale behind the setup, [docs/features/api-contract.md](docs/features/api-contract.md) for the contract workflow, and [docs/releasing.md](docs/releasing.md) for the branch and release workflow; implementation plans live in [docs/plans/](docs/plans/).
+The backend is the Spring Boot **media-api** (port 4001) in a separate repo, [ethannet-media](https://github.com/Ethan-S-Evans/ethannet-media), checked out locally at `../ethannet-media`. It owns the OpenAPI contract; this repo vendors a pinned copy. See [docs/architecture.md](docs/architecture.md) for the rationale behind the setup, [docs/features/api-contract.md](docs/features/api-contract.md) for the contract workflow, and [docs/releasing.md](docs/releasing.md) for the branch and release workflow; implementation plans live in [docs/plans/](docs/plans/).
 
 ## Commands
 
 Run from the repo root (Node >=20, `engine-strict` is on):
 
-- `pnpm dev` — the ui in watch mode, on `127.0.0.1:3000` only. Start the photos-api separately (from `../ethannet-media`: `podman compose up -d postgres`, then `./mvnw spring-boot:run`)
+- `pnpm dev` — the ui in watch mode, on `127.0.0.1:3000` only. Start the media-api separately (from `../ethannet-media`: `podman compose up -d postgres`, then `./mvnw spring-boot:run`)
 - `pnpm build` / `pnpm start` — production build of every package / run of the ui
 - `pnpm typecheck` — `tsc --noEmit` in every package
 - `pnpm test` — Vitest unit tests in every package
-- `pnpm test:e2e` — Playwright; starts the ui dev server itself (reuses a running one outside CI) but needs the photos-api already running. Global setup checks `PHOTOS_API_URL/actuator/health` (default `http://localhost:4001`) and fails with instructions if it isn't up
+- `pnpm test:e2e` — Playwright; starts the ui dev server itself (reuses a running one outside CI) but needs the media-api already running. Global setup checks `MEDIA_API_URL/actuator/health` (default `http://localhost:4001`) and fails with instructions if it isn't up
 - `pnpm storybook` — ui Storybook on `127.0.0.1:6006`
 - `pnpm lint` / `pnpm lint:fix` / `pnpm format` — Biome for the whole repo (no ESLint/Prettier); `pnpm lint` also runs `check:api`
 - `pnpm check:api` — fail if `packages/schema`'s generated types are stale against its vendored spec
-- `pnpm --filter @ethannet/schema sync:api <tag>` — vendor the photos-api spec at a release tag and regenerate the types
+- `pnpm --filter @ethannet/schema sync:api <tag> [path]` — vendor the media-api spec at a release tag and regenerate the types. Pass the spec's new path when a release moved it (the first sync after `v0.1.0` needs `openapi/media-api.yaml`)
 - `pnpm changeset` — add a changeset for the current branch; `pnpm changeset status` shows the pending bump
 - `pnpm version-packages` — release only: apply pending changesets to every package version and changelog
 
-**Localhost only**: the ui dev/start servers (`next … -H 127.0.0.1`) and Storybook (`--host 127.0.0.1`) bind to loopback, as does the photos-api, so nothing is reachable from the network. Don't remove those flags or add servers that listen on `0.0.0.0`.
+**Localhost only**: the ui dev/start servers (`next … -H 127.0.0.1`) and Storybook (`--host 127.0.0.1`) bind to loopback, as does the media-api, so nothing is reachable from the network. Don't remove those flags or add servers that listen on `0.0.0.0`.
 
 Package names are `@ethannet/ui`, `@ethannet/e2e`, `@ethannet/schema`, `@ethannet/messages`, `@ethannet/navigation`. To target one package or one test:
 
@@ -37,10 +37,10 @@ pnpm --filter @ethannet/e2e exec playwright test tests/home.spec.ts
 
 ## Architecture
 
-- **API contract types come from `packages/schema`**, generated from `openapi/photos-api.yaml`. That spec is a vendored copy of the photos-api's spec, pinned to a release tag in `package.json` → `photosApi.ref`; never edit it or `src/generated/` by hand. Change the contract in the photos-api repo, release it, then `sync:api <tag>`. The generated `src/generated/photos-api.ts` is committed, and `src/index.ts` exports friendly aliases (`HelloResponse`) with doc comments. Use `import type` so nothing from the package exists at runtime. See [docs/features/api-contract.md](docs/features/api-contract.md).
+- **API contract types come from `packages/schema`**, generated from `openapi/media-api.yaml`. That spec is a vendored copy of the media-api's spec, pinned to a release tag in `package.json` → `mediaApi.ref`; never edit it or `src/generated/` by hand. Change the contract in the media-api repo, release it, then `sync:api <tag>`. The generated `src/generated/media-api.ts` is committed, and `src/index.ts` exports friendly aliases (`HelloResponse`) with doc comments. Use `import type` so nothing from the package exists at runtime. See [docs/features/api-contract.md](docs/features/api-contract.md).
   - Workspace packages are consumed directly from source — each `exports` points at `./src/index.ts`, with no build step. The ui can only import them because of `transpilePackages: ["@ethannet/messages", "@ethannet/navigation", "@ethannet/schema"]` in `apps/ui/next.config.ts`; any new internal workspace package imported by the ui needs adding there too.
 - **Where types live**: API types come from `@ethannet/schema`. A type a package needs lives in that package (`UiMessages` in `@ethannet/messages`; `LinkConfig`, `NavLinkId`, `SocialLinkId` in `@ethannet/navigation`), because packages never import from apps. Types only the ui uses live in `apps/ui/src/types/` and are imported as `@/types`.
-- **ui**: async server components fetch the photos-api at `NEXT_PUBLIC_API_URL` (default `http://localhost:4001`). Presentational components in `src/components/` take data as props. Each lives in its own folder (`src/components/HelloCard/`) holding the component, its `.test.tsx` (jsdom + Testing Library), `.stories.tsx`, any `.module.css`, and an `index.ts` that re-exports it, so imports stay `@/components/HelloCard`. `@/*` aliases `apps/ui/src/*` (mirrored in `vitest.config.ts`).
+- **ui**: async server components fetch the media-api at `NEXT_PUBLIC_API_URL` (default `http://localhost:4001`). Presentational components in `src/components/` take data as props. Each lives in its own folder (`src/components/HelloCard/`) holding the component, its `.test.tsx` (jsdom + Testing Library), `.stories.tsx`, any `.module.css`, and an `index.ts` that re-exports it, so imports stay `@/components/HelloCard`. `@/*` aliases `apps/ui/src/*` (mirrored in `vitest.config.ts`).
   - Site-wide layout (header, footer, mobile menu) lives in `src/components/layout/`. The link lists (routes plus message keys) live in `packages/navigation`; `app/layout.tsx` resolves their labels with `resolveLinks(navLinks, messages.Navigation)` and injects the result, and components never import config directly. See [docs/features/site-layout.md](docs/features/site-layout.md).
   - **UI copy** (visible text and `aria-label`s) lives in `packages/messages/messages/en.json`, typed by `UiMessages`, which `@ethannet/messages` exports. Components take their namespace as a `messages` prop and never hardcode text; stories use the real `messages`, while unit tests pass made-up messages and e2e specs hardcode the expected copy, so a wrong label still fails a test. See [docs/features/ui-messages.md](docs/features/ui-messages.md).
   - Styling is CSS Modules: an `X.module.css` beside each component, with resets and color variables in `app/globals.css`.
@@ -100,7 +100,7 @@ TDD is the default workflow from here on. Write the failing test first, make it 
 
 - Every component gets a `.test.tsx` (Vitest + Testing Library) before or alongside its implementation, never after the fact.
 - Every page gets test coverage: unit tests for its logic and components, and a Playwright spec in `apps/e2e/tests/` for its rendered behavior.
-- Every package module and script with logic (e.g. `packages/schema/scripts/photos-api-source.mjs`) gets Vitest tests. Backend routes and services are tested in the photos-api repo.
+- Every package module and script with logic (e.g. `packages/schema/scripts/media-api-source.mjs`) gets Vitest tests. Backend routes and services are tested in the media-api repo.
 - No feature is done until its tests exist and `pnpm test` (plus `pnpm test:e2e` for pages) passes.
 
 ### Documentation
