@@ -7,7 +7,7 @@ import "./globals.css";
 
 export const metadata = {
   title: "ethannet",
-  description: "ethannet: a Next.js UI backed by a Spring Boot photos API",
+  description: "ethannet: a Next.js UI backed by a Spring Boot media API",
 };
 
 // Composition root: the only place the link config and the shared messages are

@@ -1,12 +1,12 @@
 # ethannet-ui
 
-The Next.js UI for ethannet, as a pnpm-workspace TypeScript monorepo. The backend, a Spring Boot photos-api, lives in its own repo: [ethannet-media](https://github.com/Ethan-S-Evans/ethannet-media).
+The Next.js UI for ethannet, as a pnpm-workspace TypeScript monorepo. The backend, a Spring Boot media-api, lives in its own repo: [ethannet-media](https://github.com/Ethan-S-Evans/ethannet-media).
 
 ## Layout
 
 - [apps/ui](apps/ui) — Next.js app
-- [apps/e2e](apps/e2e) — Playwright end-to-end tests covering the ui against a running photos-api
-- [packages/schema](packages/schema) — the photos-api OpenAPI contract (vendored, pinned to a release) and TypeScript types generated from it
+- [apps/e2e](apps/e2e) — Playwright end-to-end tests covering the ui against a running media-api
+- [packages/schema](packages/schema) — the media-api OpenAPI contract (vendored, pinned to a release) and TypeScript types generated from it
 - [packages/messages](packages/messages) — the ui copy
 - [packages/navigation](packages/navigation) — the site link config
 - [docs](docs) — documentation, including plans
@@ -15,7 +15,7 @@ See [docs/architecture.md](docs/architecture.md) for how the pieces fit together
 
 ## Getting started
 
-Start the photos-api first, from a checkout of [ethannet-media](https://github.com/Ethan-S-Evans/ethannet-media) next to this one (it needs JDK 25 and Podman):
+Start the media-api first, from a checkout of [ethannet-media](https://github.com/Ethan-S-Evans/ethannet-media) next to this one (it needs JDK 25 and Podman):
 
 ```
 cd ../ethannet-media
@@ -30,7 +30,7 @@ pnpm install
 pnpm dev
 ```
 
-The ui runs on http://localhost:3000 and calls the photos-api on http://localhost:4001. Both, and Storybook, listen on `127.0.0.1` only, so they're never reachable from the network.
+The ui runs on http://localhost:3000 and calls the media-api on http://localhost:4001. Both, and Storybook, listen on `127.0.0.1` only, so they're never reachable from the network.
 
 ## Scripts
 
@@ -41,7 +41,7 @@ The ui runs on http://localhost:3000 and calls the photos-api on http://localhos
 | `pnpm start` | Run the built ui |
 | `pnpm typecheck` | Typecheck all packages |
 | `pnpm test` | Run unit tests (Vitest) in all packages |
-| `pnpm test:e2e` | Run Playwright end-to-end tests (needs the photos-api running) |
+| `pnpm test:e2e` | Run Playwright end-to-end tests (needs the media-api running) |
 | `pnpm storybook` | Run Storybook for the ui's components |
 | `pnpm lint` | Lint the whole repo with Biome, and check the generated API types are current |
 | `pnpm format` | Format the whole repo with Biome |

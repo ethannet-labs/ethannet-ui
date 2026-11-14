@@ -242,3 +242,7 @@ The photos-api repo was renamed from `ethannet` to **`ethannet-media`**, both on
 ### C6: first release (2026-11-14)
 
 photos-api `v0.1.0` was tagged in `ethannet-media`, and this repo ran `pnpm --filter @ethannet/schema sync:api v0.1.0`. Only the spec's `info.version` changed (0.0.1 → 0.1.0), so the generated types are identical. `photosApi.ref` is now `v0.1.0`, and `check:api:upstream` passes.
+
+### Rename to media-api (2026-11-14, after v0.1.0)
+
+The backend service was renamed from **photos-api** to **media-api**. Here that means: the vendored spec is `packages/schema/openapi/media-api.yaml`, the generated types are `src/generated/media-api.ts`, the scripts are `scripts/media-api-source*.mjs`, the config key in `packages/schema/package.json` is `mediaApi`, and the e2e override is `MEDIA_API_URL` (was `PHOTOS_API_URL`). The vendored file's content is kept byte-for-byte as released in `v0.1.0`, still titled "photos-api", and `mediaApi.path` stays at `openapi/photos-api.yaml`, the file's path in that tag. `sync:api` takes an optional second argument to move the path, for the first sync to a release that has the renamed spec. The home e2e test now expects "Hello from the media API!".
