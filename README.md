@@ -30,7 +30,7 @@ pnpm install
 pnpm dev
 ```
 
-The ui runs on http://localhost:3000 and calls the photos-api on http://localhost:4001.
+The ui runs on http://localhost:3000 and calls the photos-api on http://localhost:4001. Both, and Storybook, listen on `127.0.0.1` only, so they're never reachable from the network.
 
 ## Scripts
 

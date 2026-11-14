@@ -12,17 +12,19 @@ The backend is the Spring Boot **photos-api** (port 4001) in a separate repo, [e
 
 Run from the repo root (Node >=20, `engine-strict` is on):
 
-- `pnpm dev` — the ui in watch mode. Start the photos-api separately (from `../ethannet`: `podman compose up -d postgres`, then `./mvnw spring-boot:run`)
+- `pnpm dev` — the ui in watch mode, on `127.0.0.1:3000` only. Start the photos-api separately (from `../ethannet`: `podman compose up -d postgres`, then `./mvnw spring-boot:run`)
 - `pnpm build` / `pnpm start` — production build of every package / run of the ui
 - `pnpm typecheck` — `tsc --noEmit` in every package
 - `pnpm test` — Vitest unit tests in every package
 - `pnpm test:e2e` — Playwright; starts the ui dev server itself (reuses a running one outside CI) but needs the photos-api already running. Global setup checks `PHOTOS_API_URL/actuator/health` (default `http://localhost:4001`) and fails with instructions if it isn't up
-- `pnpm storybook` — ui Storybook on port 6006
+- `pnpm storybook` — ui Storybook on `127.0.0.1:6006`
 - `pnpm lint` / `pnpm lint:fix` / `pnpm format` — Biome for the whole repo (no ESLint/Prettier); `pnpm lint` also runs `check:api`
 - `pnpm check:api` — fail if `packages/schema`'s generated types are stale against its vendored spec
 - `pnpm --filter @ethannet/schema sync:api <tag>` — vendor the photos-api spec at a release tag and regenerate the types
 - `pnpm changeset` — add a changeset for the current branch; `pnpm changeset status` shows the pending bump
 - `pnpm version-packages` — release only: apply pending changesets to every package version and changelog
+
+**Localhost only**: the ui dev/start servers (`next … -H 127.0.0.1`) and Storybook (`--host 127.0.0.1`) bind to loopback, as does the photos-api, so nothing is reachable from the network. Don't remove those flags or add servers that listen on `0.0.0.0`.
 
 Package names are `@ethannet/ui`, `@ethannet/e2e`, `@ethannet/schema`, `@ethannet/messages`, `@ethannet/navigation`. To target one package or one test:
 
@@ -71,8 +73,10 @@ The whole repo shares one [semver](https://semver.org) version (`MAJOR.MINOR.PAT
 
 Every third-party package must be free, permissively licensed open source. Check a package's license (the `license` field in its `package.json` or its repository) before adding it.
 
-- **Allowed**: MIT, Apache-2.0, ISC, BSD-2-Clause, BSD-3-Clause, and 0BSD.
-- **Not allowed without the user's explicit approval**: copyleft licenses (GPL, LGPL, AGPL, MPL, EUPL), "source-available" or non-commercial licenses (BSL, SSPL, Commons Clause, CC-BY-NC), packages with no license, and anything that requires a paid license.
+- **Allowed**: MIT, Apache-2.0, ISC, BSD-2-Clause, BSD-3-Clause, 0BSD, and EPL-2.0. EDL-1.0 (the Eclipse Distribution License) is the BSD-3-Clause text and counts as BSD-3-Clause.
+  - **EPL-2.0 only for unmodified dependencies.** Use EPL-2.0 libraries as published. Never copy their source into this repo or patch them (including with `pnpm patch`): changed EPL files must be published under EPL. If a build that bundles them is ever distributed, keep their license notices in it.
+  - **Dual-licensed dependencies** are allowed when one of their options is on this list. Treat them as licensed under that option (e.g. a package "MIT OR GPL-3.0" is used under MIT).
+- **Not allowed without the user's explicit approval**: copyleft licenses (GPL, LGPL, AGPL, MPL, EUPL, EPL-1.0), "source-available" or non-commercial licenses (BSL, SSPL, Commons Clause, CC-BY-NC), packages with no license, and anything that requires a paid license.
 - If a package's license isn't on the allowed list, or you're unsure about it, ask before adding it.
 - pnpm settings such as `overrides` (used to pin patched versions after `pnpm audit`) go in `pnpm-workspace.yaml`. pnpm 11 ignores the `"pnpm"` field in `package.json`.
 
