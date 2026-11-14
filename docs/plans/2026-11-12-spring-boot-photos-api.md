@@ -238,3 +238,7 @@ The original plan put the Spring Boot app in `apps/photos-api` inside this pnpm 
 ### Rename to ethannet-media (2026-11-14)
 
 The photos-api repo was renamed from `ethannet` to **`ethannet-media`**, both on GitHub (`Ethan-S-Evans/ethannet-media`; GitHub redirects the old name) and locally. Both repos now live side by side in a shared folder, `~/git/ethannet/` (`ethannet-media/` and `ethannet-ui/`). Wherever this plan says `ethannet` for the backend repo, read `ethannet-media`. Live docs, the ui's `photosApi.repo`, and the `../ethannet-media` paths were updated. The service and artifact are still called `photos-api`.
+
+### C6: first release (2026-11-14)
+
+photos-api `v0.1.0` was tagged in `ethannet-media`, and this repo ran `pnpm --filter @ethannet/schema sync:api v0.1.0`. Only the spec's `info.version` changed (0.0.1 → 0.1.0), so the generated types are identical. `photosApi.ref` is now `v0.1.0`, and `check:api:upstream` passes.
