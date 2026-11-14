@@ -2,7 +2,7 @@
   "name": "@ethannet/schema",
   "version": "0.0.1",
   "private": true,
-  "description": "The photos-api contract: an OpenAPI spec plus TypeScript types generated from it, consumed directly from source (no build step).",
+  "description": "The photos-api contract as consumed by the ui: a vendored copy of the OpenAPI spec, pinned to a photos-api release, plus TypeScript types generated from it. Consumed directly from source (no build step).",
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
@@ -11,11 +11,20 @@
   },
   "scripts": {
     "generate:api": "openapi-typescript openapi/photos-api.yaml -o src/generated/photos-api.ts",
+    "sync:api": "node scripts/sync-api.mjs",
     "check:api": "node scripts/check-api.mjs",
-    "typecheck": "tsc --noEmit"
+    "check:api:upstream": "node scripts/check-api-upstream.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "devDependencies": {
     "openapi-typescript": "^7.13.0",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "photosApi": {
+    "repo": "Ethan-S-Evans/ethannet",
+    "path": "openapi/photos-api.yaml",
+    "ref": null
   }
 }

@@ -4,26 +4,30 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-pnpm-workspace TypeScript monorepo: Express API (`apps/api`, port 4001), Next.js App Router UI (`apps/ui`, port 3000), Express media server (`apps/media-server`, port 4002), Node.js app (`apps/core`), Playwright suite (`apps/e2e`), shared API contract types (`packages/types`), the ui copy (`packages/messages`), and the site link config (`packages/navigation`). `apps/` holds things that run; `packages/` holds things apps import. See [docs/architecture.md](docs/architecture.md) for the rationale behind the setup and [docs/releasing.md](docs/releasing.md) for the branch and release workflow; implementation plans live in [docs/plans/](docs/plans/).
+pnpm-workspace TypeScript monorepo for the ethannet UI: Next.js App Router UI (`apps/ui`, port 3000), Playwright suite (`apps/e2e`), the photos-api contract types (`packages/schema`), the ui copy (`packages/messages`), and the site link config (`packages/navigation`). `apps/` holds things that run; `packages/` holds things apps import.
+
+The backend is the Spring Boot **photos-api** (port 4001) in a separate repo, [ethannet](https://github.com/Ethan-S-Evans/ethannet), checked out locally at `../ethannet`. It owns the OpenAPI contract; this repo vendors a pinned copy. See [docs/architecture.md](docs/architecture.md) for the rationale behind the setup, [docs/features/api-contract.md](docs/features/api-contract.md) for the contract workflow, and [docs/releasing.md](docs/releasing.md) for the branch and release workflow; implementation plans live in [docs/plans/](docs/plans/).
 
 ## Commands
 
 Run from the repo root (Node >=20, `engine-strict` is on):
 
-- `pnpm dev` — api + ui in watch mode (media-server and core run separately with `pnpm --filter <name> dev`)
-- `pnpm build` / `pnpm start` — production build of every package / run of api + ui
+- `pnpm dev` — the ui in watch mode. Start the photos-api separately (from `../ethannet`: `podman compose up -d postgres`, then `./mvnw spring-boot:run`)
+- `pnpm build` / `pnpm start` — production build of every package / run of the ui
 - `pnpm typecheck` — `tsc --noEmit` in every package
 - `pnpm test` — Vitest unit tests in every package
-- `pnpm test:e2e` — Playwright; starts the api and ui dev servers itself (reuses already-running ones outside CI)
+- `pnpm test:e2e` — Playwright; starts the ui dev server itself (reuses a running one outside CI) but needs the photos-api already running. Global setup checks `PHOTOS_API_URL/actuator/health` (default `http://localhost:4001`) and fails with instructions if it isn't up
 - `pnpm storybook` — ui Storybook on port 6006
-- `pnpm lint` / `pnpm lint:fix` / `pnpm format` — Biome for the whole repo (no ESLint/Prettier)
+- `pnpm lint` / `pnpm lint:fix` / `pnpm format` — Biome for the whole repo (no ESLint/Prettier); `pnpm lint` also runs `check:api`
+- `pnpm check:api` — fail if `packages/schema`'s generated types are stale against its vendored spec
+- `pnpm --filter @ethannet/schema sync:api <tag>` — vendor the photos-api spec at a release tag and regenerate the types
 - `pnpm changeset` — add a changeset for the current branch; `pnpm changeset status` shows the pending bump
 - `pnpm version-packages` — release only: apply pending changesets to every package version and changelog
 
-Package names are `@ethannet/api`, `@ethannet/ui`, `@ethannet/media-server`, `@ethannet/core`, `@ethannet/e2e`, `@ethannet/types`, `@ethannet/messages`, `@ethannet/navigation`. To target one package or one test:
+Package names are `@ethannet/ui`, `@ethannet/e2e`, `@ethannet/schema`, `@ethannet/messages`, `@ethannet/navigation`. To target one package or one test:
 
 ```
-pnpm --filter @ethannet/api test
+pnpm --filter @ethannet/ui test
 pnpm --filter @ethannet/ui exec vitest run src/components/HelloCard/HelloCard.test.tsx
 pnpm --filter @ethannet/ui exec vitest run -t "test name"
 pnpm --filter @ethannet/e2e exec playwright test tests/home.spec.ts
@@ -31,16 +35,14 @@ pnpm --filter @ethannet/e2e exec playwright test tests/home.spec.ts
 
 ## Architecture
 
-- **API contracts live in `packages/types`** and are consumed directly from source — its `exports` points at `./src/index.ts`, with no build step. Apps must use `import type` for these so nothing from the package exists at runtime.
-  - The ui can only import it because of `transpilePackages: ["@ethannet/messages", "@ethannet/navigation", "@ethannet/types"]` in `apps/ui/next.config.ts`; any new internal workspace package imported by the ui needs adding there too.
-  - The Node apps (api, media-server, core) run via `tsx watch` in dev and are bundled by `tsup` for production (`tsc --outDir` fails on files outside each app's `rootDir`). `tsc` is used only for typechecking.
-- **api**: routers in `apps/api/src/routes/`, mounted under `/api/*` in `src/index.ts`. Response-building logic is extracted into pure functions (e.g. `buildHelloResponse`) so Vitest can test it without HTTP. CORS is wide open for local dev only.
-- **media-server**: serves files from `MEDIA_DIR` (default `apps/media-server/media`). The router is built by a factory (`buildMediaRouter(mediaDir)`) so the directory is injected rather than hard-coded.
-- **ui**: async server components fetch the api at `NEXT_PUBLIC_API_URL` (default `http://localhost:4001`). Presentational components in `src/components/` take data as props. Each lives in its own folder (`src/components/HelloCard/`) holding the component, its `.test.tsx` (jsdom + Testing Library), `.stories.tsx`, any `.module.css`, and an `index.ts` that re-exports it, so imports stay `@/components/HelloCard`. `@/*` aliases `apps/ui/src/*` (mirrored in `vitest.config.ts`).
+- **API contract types come from `packages/schema`**, generated from `openapi/photos-api.yaml`. That spec is a vendored copy of the photos-api's spec, pinned to a release tag in `package.json` → `photosApi.ref`; never edit it or `src/generated/` by hand. Change the contract in the photos-api repo, release it, then `sync:api <tag>`. The generated `src/generated/photos-api.ts` is committed, and `src/index.ts` exports friendly aliases (`HelloResponse`) with doc comments. Use `import type` so nothing from the package exists at runtime. See [docs/features/api-contract.md](docs/features/api-contract.md).
+  - Workspace packages are consumed directly from source — each `exports` points at `./src/index.ts`, with no build step. The ui can only import them because of `transpilePackages: ["@ethannet/messages", "@ethannet/navigation", "@ethannet/schema"]` in `apps/ui/next.config.ts`; any new internal workspace package imported by the ui needs adding there too.
+- **Where types live**: API types come from `@ethannet/schema`. A type a package needs lives in that package (`UiMessages` in `@ethannet/messages`; `LinkConfig`, `NavLinkId`, `SocialLinkId` in `@ethannet/navigation`), because packages never import from apps. Types only the ui uses live in `apps/ui/src/types/` and are imported as `@/types`.
+- **ui**: async server components fetch the photos-api at `NEXT_PUBLIC_API_URL` (default `http://localhost:4001`). Presentational components in `src/components/` take data as props. Each lives in its own folder (`src/components/HelloCard/`) holding the component, its `.test.tsx` (jsdom + Testing Library), `.stories.tsx`, any `.module.css`, and an `index.ts` that re-exports it, so imports stay `@/components/HelloCard`. `@/*` aliases `apps/ui/src/*` (mirrored in `vitest.config.ts`).
   - Site-wide layout (header, footer, mobile menu) lives in `src/components/layout/`. The link lists (routes plus message keys) live in `packages/navigation`; `app/layout.tsx` resolves their labels with `resolveLinks(navLinks, messages.Navigation)` and injects the result, and components never import config directly. See [docs/features/site-layout.md](docs/features/site-layout.md).
-  - **UI copy** (visible text and `aria-label`s) lives in `packages/messages/messages/en.json`, typed by `UiMessages` in `packages/types`. Components take their namespace as a `messages` prop and never hardcode text; stories use the real `messages`, while unit tests pass made-up messages and e2e specs hardcode the expected copy, so a wrong label still fails a test. See [docs/features/ui-messages.md](docs/features/ui-messages.md).
+  - **UI copy** (visible text and `aria-label`s) lives in `packages/messages/messages/en.json`, typed by `UiMessages`, which `@ethannet/messages` exports. Components take their namespace as a `messages` prop and never hardcode text; stories use the real `messages`, while unit tests pass made-up messages and e2e specs hardcode the expected copy, so a wrong label still fails a test. See [docs/features/ui-messages.md](docs/features/ui-messages.md).
   - Styling is CSS Modules: an `X.module.css` beside each component, with resets and color variables in `app/globals.css`.
-- **Code style**: Biome with 2-space indent, double quotes, organized imports. TS is `strict` with `noUncheckedIndexedAccess`; per-package tsconfigs extend `tsconfig.base.json`.
+- **Code style**: Biome with 2-space indent, double quotes, organized imports (it ignores `packages/schema/src/generated/`). TS is `strict` with `noUncheckedIndexedAccess`; per-package tsconfigs extend `tsconfig.base.json`.
 
 ## Development Principles
 
@@ -57,10 +59,10 @@ All changes are made on a feature branch. Never commit directly to `main` or `de
 
 The whole repo shares one [semver](https://semver.org) version (`MAJOR.MINOR.PATCH`): every workspace package's `package.json` always has the same version, and each release to `main` is tagged `vX.Y.Z`. Versions are managed with [Changesets](https://github.com/changesets/changesets) in "fixed" mode (`.changeset/config.json` fixes every `@ethannet/*` package together), so bumping one package bumps them all. The root `package.json` isn't a workspace package and has no version. See [docs/releasing.md](docs/releasing.md) for the step-by-step workflow.
 
-- **Every feature branch adds a changeset** (`pnpm changeset`, or non-interactively `pnpm changeset --minor @ethannet/api -m "Summary"`) that picks the bump type and gives a one-line summary for the changelog. Because versions are fixed, naming any one package is enough. A branch with no user-facing change (docs, tests, tooling) uses `pnpm changeset --empty`.
+- **Every feature branch adds a changeset** (`pnpm changeset`, or non-interactively `pnpm changeset --minor @ethannet/ui -m "Summary"`) that picks the bump type and gives a one-line summary for the changelog. Because versions are fixed, naming any one package is enough. A branch with no user-facing change (docs, tests, tooling) uses `pnpm changeset --empty`.
 - **Bump types**:
-  - **major**: a breaking change to an API contract in `packages/types` or an endpoint, or a large user-facing overhaul.
-  - **minor**: a new feature or endpoint that doesn't break anything.
+  - **major**: a breaking change to a shared package's exports, or a large user-facing overhaul.
+  - **minor**: a new feature or page that doesn't break anything.
   - **patch**: a bug fix or a small internal change.
 - **Pre-1.0**: the repo stays on `0.y.z` until the user decides it's ready for `1.0.0`. Until then, breaking changes bump the minor version.
 - **Releasing**: only when the user asks. On a release branch off `dev`, `pnpm version-packages` combines the pending changesets into the version bump and each package's `CHANGELOG.md`. That branch merges into `dev`, then `dev` is merged into `main`, and the merge commit is tagged `vX.Y.Z`.
@@ -82,7 +84,7 @@ All new code follows SOLID. Dependency inversion matters most here.
 - **Open/Closed**: extend behavior by adding code (new components, new routers, composition through props and children), not by editing working code to add special cases.
 - **Liskov Substitution**: any implementation of an interface or props contract must work wherever that contract is expected, with no surprise behavior, extra preconditions, or narrowed outputs.
 - **Interface Segregation**: keep interfaces and props small and specific. Components take only the props they use; don't pass whole objects "just in case" or define catch-all interfaces.
-- **Dependency Inversion**: high-level code depends on abstractions, not concrete implementations. Inject dependencies (data sources, API clients, services, config) through parameters, props, or factory functions instead of importing or constructing them inline, so they can be swapped and mocked in tests. Shared contracts belong in `packages/types`.
+- **Dependency Inversion**: high-level code depends on abstractions, not concrete implementations. Inject dependencies (data sources, API clients, services, config) through parameters, props, or factory functions instead of importing or constructing them inline, so they can be swapped and mocked in tests. Shared API contracts come from `packages/schema`; types a package needs live in that package.
 
 ### Test-driven development
 
@@ -90,7 +92,7 @@ TDD is the default workflow from here on. Write the failing test first, make it 
 
 - Every component gets a `.test.tsx` (Vitest + Testing Library) before or alongside its implementation, never after the fact.
 - Every page gets test coverage: unit tests for its logic and components, and a Playwright spec in `apps/e2e/tests/` for its rendered behavior.
-- Every backend route and service gets Vitest tests, both for its pure logic and for its HTTP behavior.
+- Every package module and script with logic (e.g. `packages/schema/scripts/photos-api-source.mjs`) gets Vitest tests. Backend routes and services are tested in the photos-api repo.
 - No feature is done until its tests exist and `pnpm test` (plus `pnpm test:e2e` for pages) passes.
 
 ### Documentation
@@ -100,7 +102,7 @@ Every new feature and every change ships with documentation. There is no fixed d
 - **Components**: Storybook is the main documentation for UI. Each component's `.stories.tsx` should cover its meaningful states and variants and use autodocs with prop descriptions, so someone can see how to use the component without reading its source.
 - **Workflows**: document dev, build, test, and release workflows, and any setup steps, in `docs/` (or here, if they belong in this overview). Update them when a workflow changes.
 - **Testing and usability**: record how to test a feature and how it's meant to be used: the user flows it supports, how to run or reproduce it, and the edge cases covered.
-- **Code**: add doc comments to exported functions, types, and API contracts in `packages/types`, especially where intent or constraints aren't obvious from the signature.
+- **Code**: add doc comments to exported functions, types, and the aliases in `packages/schema/src/index.ts`, especially where intent or constraints aren't obvious from the signature.
 - **Features**: each feature gets a page in `docs/features/` covering what it does, how to change it, its user flows and edge cases, and how to test it.
 - **Plans**: save every approved implementation plan to `docs/plans/` as `YYYY-MM-DD-short-slug.md` (e.g. `2026-08-29-initialize-monorepo.md`), before or alongside the implementation. Link the plan to the feature docs it produces and link those docs back to the plan. If the build ends up differing from the plan, add an "As built" section noting the differences.
 - Update existing docs in the same change that makes them out of date.
