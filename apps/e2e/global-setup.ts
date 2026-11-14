@@ -8,7 +8,7 @@ export default async function globalSetup(): Promise<void> {
   const base = process.env.PHOTOS_API_URL ?? "http://localhost:4001";
   const url = `${base}/actuator/health`;
   const hint =
-    "Start it from the photos-api repo (../ethannet): `podman compose up -d postgres`, then `./mvnw spring-boot:run`.";
+    "Start it from the photos-api repo (../ethannet-media): `podman compose up -d postgres`, then `./mvnw spring-boot:run`.";
 
   let res: Response;
   try {

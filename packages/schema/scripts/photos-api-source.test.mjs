@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { specUrl, withRef } from "./photos-api-source.mjs";
 
 const source = {
-  repo: "Ethan-S-Evans/ethannet",
+  repo: "Ethan-S-Evans/ethannet-media",
   path: "openapi/photos-api.yaml",
   ref: "v0.1.0",
 };
@@ -10,7 +10,7 @@ const source = {
 describe("specUrl", () => {
   it("points at the raw spec file in the photos-api repo at the pinned ref", () => {
     expect(specUrl(source)).toBe(
-      "https://raw.githubusercontent.com/Ethan-S-Evans/ethannet/v0.1.0/openapi/photos-api.yaml",
+      "https://raw.githubusercontent.com/Ethan-S-Evans/ethannet-media/v0.1.0/openapi/photos-api.yaml",
     );
   });
 
