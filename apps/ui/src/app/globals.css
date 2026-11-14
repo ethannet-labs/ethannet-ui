@@ -1,10 +1,46 @@
-:root {
+/*
+ * Theme tokens. Light is the default; dark follows the visitor's OS setting
+ * (prefers-color-scheme). `data-theme="light"` or `"dark"` forces one theme
+ * regardless of the OS: on <html> for the whole page (a future toggle), or on
+ * any element for just its subtree (Storybook's theme toolbar wraps each story
+ * this way). Components use only these variables, never raw colors.
+ */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
   --header-height: 4rem;
   --color-text: #1a1a1a;
   --color-muted: #555;
   --color-surface: #fff;
   --color-background: #fafafa;
   --color-border: #e5e5e5;
+  --color-shadow: rgb(0 0 0 / 0.15);
+  --color-backdrop: rgb(0 0 0 / 0.4);
+}
+
+/* The dark values appear twice because CSS can't share a block between a media query and a selector. Keep them in sync. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --color-text: #ededed;
+    --color-muted: #a3a3a3;
+    --color-surface: #171717;
+    --color-background: #0a0a0a;
+    --color-border: #2e2e2e;
+    --color-shadow: rgb(0 0 0 / 0.6);
+    --color-backdrop: rgb(0 0 0 / 0.6);
+  }
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-text: #ededed;
+  --color-muted: #a3a3a3;
+  --color-surface: #171717;
+  --color-background: #0a0a0a;
+  --color-border: #2e2e2e;
+  --color-shadow: rgb(0 0 0 / 0.6);
+  --color-backdrop: rgb(0 0 0 / 0.6);
 }
 
 *,

@@ -30,3 +30,6 @@ export const Default: Story = {};
 
 /** The social list is omitted entirely when there are no social links. */
 export const NoSocialLinks: Story = { args: { socialLinks: [] } };
+
+/** Dark theme. The site switches automatically with the OS setting; use the Theme toolbar to preview either theme. */
+export const Dark: Story = { globals: { theme: "dark" } };

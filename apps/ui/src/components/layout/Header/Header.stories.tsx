@@ -29,3 +29,13 @@ export const Mobile: Story = {
 export const Desktop: Story = {
   globals: { viewport: { value: "desktop", isRotated: false } },
 };
+
+/** Dark theme on a phone. The site switches automatically with the OS setting; use the Theme toolbar to preview either theme. */
+export const MobileDark: Story = {
+  globals: { viewport: { value: "mobile2", isRotated: false }, theme: "dark" },
+};
+
+/** Dark theme on desktop. */
+export const DesktopDark: Story = {
+  globals: { viewport: { value: "desktop", isRotated: false }, theme: "dark" },
+};
